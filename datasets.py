@@ -3,7 +3,9 @@ from torchvision import datasets
 from diffusion.utils import DATASET_ROOT, get_classes_templates
 from diffusion.dataset.objectnet import ObjectNetBase
 from diffusion.dataset.imagenet import ImageNet as ImageNetBase
-import pandas as pd 
+import pandas as pd
+import os 
+import glob
 
 
 class MNIST(datasets.MNIST):
@@ -95,19 +97,32 @@ def get_target_dataset(name: str, train=False, transform=None, target_transform=
         dataset = MNIST(root=DATASET_ROOT, train=train, transform=transform, target_transform=target_transform,
                         download=True)
     elif name == "clevr":
-        dataset = datasets.ImageFolder('beth_single_val_100/', transform=transform)
+        dataset = datasets.ImageFolder('/content/beth_single_100_train/', transform=transform)
         classes = pd.read_csv('clevr_prompts_cone.csv')
         dataset.class_to_idx = {classes.iloc[i, 1] : classes.iloc[i,2] for i in range(len(classes))}
+        # dataset.file_to_class = {}
+        # count = 0
+        # for name in sorted(glob.glob('/content/drive/MyDrive/single_object/images/*png')):
+        #     cur_name = os.path.basename(name)
+        #     for i in range(len(dfs)):
+        #       filename = dfs.iloc[i,1]
+        #       if filename == cur_name:
+        #         dataset.file_to_class[str(count)] = dataset.class_to_idx[dfs.iloc[i,2]]
+        #         count += 1
 
     else:
         raise ValueError(f"Dataset {name} not supported.")
 
-    if name in {'mnist', 'cifar10', 'stl10', 'aircraft', 'clevr'}:
+    if name in {'mnist', 'cifar10', 'stl10', 'aircraft', 'clevr'}: 
+        file_class_list = pd.read_csv('clevr_beth_train.csv')
+
         dataset.file_to_class = {
-            str(idx): dataset[idx][1]
-            for idx in range(len(dataset))
+            str(idx): file_class_list['classidx'][dataset[idx][1]]
+           for idx in range(len(dataset))
         }
 
+    print("file to clawss: ", dataset.file_to_class)
+    print("class to idx: ", dataset.class_to_idx) # class name : idx
     assert hasattr(dataset, "class_to_idx"), f"Dataset {name} does not have a class_to_idx attribute."
     assert hasattr(dataset, "file_to_class"), f"Dataset {name} does not have a file_to_class attribute."
     return dataset
