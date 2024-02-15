@@ -247,6 +247,7 @@ def main():
                 total += 1
             continue
         image, label = target_dataset[i]
+        label = target_dataset.file_to_class[str(i)]
         with torch.no_grad():
             img_input = image.to(device).unsqueeze(0)
             if args.dtype == 'float16':
