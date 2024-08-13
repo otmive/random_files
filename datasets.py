@@ -97,7 +97,7 @@ def get_target_dataset(name: str, train=False, transform=None, target_transform=
         dataset = MNIST(root=DATASET_ROOT, train=train, transform=transform, target_transform=target_transform,
                         download=True)
     elif name == "clevr":
-        dataset = datasets.ImageFolder('/content/beth_single_100_train/', transform=transform)
+        dataset = datasets.ImageFolder('/content/trainTest20/', transform=transform)
         classes = pd.read_csv('clevr_prompts_cone.csv')
         dataset.class_to_idx = {classes.iloc[i, 1] : classes.iloc[i,2] for i in range(len(classes))}
         # dataset.file_to_class = {}
