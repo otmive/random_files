@@ -165,9 +165,13 @@ def main():
     # args for adaptively choosing which classes to continue trying
     parser.add_argument('--to_keep', nargs='+', type=int, required=True)
     parser.add_argument('--n_samples', nargs='+', type=int, required=True)
+    parser.add_argument('--seed', type=int, default=0, help='Seed number')
+
 
     args = parser.parse_args()
     assert len(args.to_keep) == len(args.n_samples)
+    torch.manual_seed(args.seed)
+
 
     # make run output folder
     name = f"v{args.version}_{args.n_trials}trials_"
@@ -273,8 +277,8 @@ def main():
             correct += 1
         total += 1
 
-    df = pd.DataFrame(rows_list)
-    df.to_csv('trained_10_train_output.csv')
+        df = pd.DataFrame(rows_list)
+        df.to_csv('seed_2_train_single_output.csv')
 
 
 if __name__ == '__main__':
